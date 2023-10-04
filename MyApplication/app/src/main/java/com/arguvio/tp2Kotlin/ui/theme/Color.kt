@@ -1,4 +1,4 @@
-package com.example.`tp2-kotlin`.ui.theme
+package com.example.tp2Kotlin.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
