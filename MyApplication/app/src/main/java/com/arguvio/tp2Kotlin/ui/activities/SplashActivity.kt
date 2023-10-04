@@ -6,11 +6,23 @@ import android.os.Handler
 import android.os.Looper
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.unit.dp
 import com.arguvio.tp2Kotlin.ui.activities.ui.theme.MyApplicationTheme
+import com.example.myapplication.R
 
 class SplashActivity : ComponentActivity() {
 
@@ -25,7 +37,7 @@ class SplashActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-
+                    SplashScreenContent();
                 }
             }
         }
@@ -37,5 +49,20 @@ class SplashActivity : ComponentActivity() {
             startActivity(intent)
             finish()
         }, splashDelayMillis)
+    }
+}
+
+@Composable
+fun SplashScreenContent() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(R.drawable.logo),
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier.size(200.dp).padding(16.dp)
+        )
     }
 }
