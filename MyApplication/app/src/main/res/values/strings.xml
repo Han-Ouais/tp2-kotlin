@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">My Application</string>
     <string name="title_activity_splash">SplashActivity</string>
+    <string name="title_activity_profile">Profile</string>
+    <string name="title_activity_create_room">CreateRoomActivity</string>
+    <string name="profile">Profile</string>
+    <string name="thread_rooms">Thread Rooms</string>
+    <string name="create_room">Create Room</string>
 </resources>
