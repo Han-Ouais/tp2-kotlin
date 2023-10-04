@@ -1,4 +1,4 @@
-package com.example.tp2Kotlin
+package com.arguvio.tp2Kotlin.ui.activities
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

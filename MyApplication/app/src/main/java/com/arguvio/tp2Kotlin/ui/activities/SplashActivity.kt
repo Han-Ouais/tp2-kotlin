@@ -9,15 +9,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.core.content.ContextCompat.startActivity
 import com.arguvio.tp2Kotlin.ui.activities.ui.theme.MyApplicationTheme
-import com.example.tp2Kotlin.MainActivity
-import kotlinx.coroutines.delay
-import kotlin.time.Duration.Companion.seconds
 
 class SplashActivity : ComponentActivity() {
 
