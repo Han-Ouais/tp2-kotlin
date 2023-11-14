@@ -1,5 +1,7 @@
 package com.arguvio.tp2Kotlin.viewModel
 
+import android.util.Log
+import androidx.compose.material3.Text
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,7 +13,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class UserViewModel @Inject constructor(private val userRepository: UserRepository) : ViewModel() {
+class UserViewModel @Inject constructor(
+    private val userRepository: UserRepository
+) : ViewModel() {
 
     private val _users = MutableLiveData<List<User>>()
     val users: LiveData<List<User>> get() = _users
@@ -19,10 +23,15 @@ class UserViewModel @Inject constructor(private val userRepository: UserReposito
     fun loadUsers() {
         viewModelScope.launch {
             try {
+                Log.d("UserViewModel", "Avant de charger les utilisateurs")
                 val userList = userRepository.getUsers()
                 _users.value = userList
+                Log.d("UserViewModel", "Utilisateurs chargés avec succès")
+                for (user in _users.value!!) {
+                    Log.d("UserViewModel", "User : ${user._id} | Name : ${user.name} | Email : ${user.email} | Password : ${user.password}")
+                }
             } catch (e: Exception) {
-                // Gérer l'erreur, par exemple, afficher un message à l'utilisateur
+                Log.e("UserViewModel", "Erreur lors du chargement des utilisateurs", e)
             }
         }
     }

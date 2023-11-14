@@ -21,34 +21,42 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.lifecycleScope
 import com.arguvio.tp2Kotlin.ui.activities.ui.theme.MyApplicationTheme
 import com.example.myapplication.R
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class SplashActivity : ComponentActivity() {
 
     private val splashDelayMillis: Long = 3000
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             MyApplicationTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    SplashScreenContent();
+                    SplashScreenContent()
                 }
             }
         }
 
-        val handler = Handler(Looper.getMainLooper())
+        lifecycleScope.launch {
+            delay(splashDelayMillis)
+            navigateToMainActivity()
+        }
+    }
 
-        handler.postDelayed({
-            val intent = Intent(this@SplashActivity, MainActivity::class.java)
-            startActivity(intent)
-            finish()
-        }, splashDelayMillis)
+    private fun navigateToMainActivity() {
+        val intent = Intent(this@SplashActivity, MainActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }
 

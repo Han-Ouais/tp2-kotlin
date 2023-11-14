@@ -10,9 +10,5 @@ class ArguvioApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        // Lancer MainActivity au démarrage de l'application
-        val intent = Intent(this, SplashActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        startActivity(intent)
     }
 }

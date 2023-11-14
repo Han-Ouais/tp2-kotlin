@@ -1,12 +1,17 @@
 package com.arguvio.tp2Kotlin.di
 
+import android.content.Context
+import androidx.room.Room
 import com.arguvio.tp2Kotlin.OnlineSource.OnlineSource
 import com.arguvio.tp2Kotlin.api.ApiService
+import com.arguvio.tp2Kotlin.dao.UserDao
+import com.arguvio.tp2Kotlin.database.AppDatabase
 import com.arguvio.tp2Kotlin.repository.UserRepository
 import com.arguvio.tp2Kotlin.viewModel.UserViewModel
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
@@ -30,6 +35,7 @@ object NetworkModule {
     }
 }
 
+
 @Module
 @InstallIn(SingletonComponent::class)
 object OnlineSourceModule {
@@ -40,15 +46,17 @@ object OnlineSourceModule {
     }
 }
 
+
 @Module
 @InstallIn(SingletonComponent::class)
 object UserRepositoryModule {
 
     @Provides
-    fun provideUserRepository(onlineSource: OnlineSource): UserRepository {
-        return UserRepository(onlineSource)
+    fun provideUserRepository(onlineSource: OnlineSource, userDao: UserDao): UserRepository {
+        return UserRepository(onlineSource, userDao)
     }
 }
+
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -58,5 +66,23 @@ object ViewModelModule {
     @Singleton
     fun provideUserViewModel(userRepository: UserRepository): UserViewModel {
         return UserViewModel(userRepository)
+    }
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object DatabaseModule {
+    @Provides
+    @Singleton
+    fun provideDatabase(@ApplicationContext appContext: Context): AppDatabase {
+        return Room.databaseBuilder(
+            appContext,
+            AppDatabase::class.java, "appDatabase"
+        ).build()
+    }
+
+    @Provides
+    fun provideUserDao(database: AppDatabase): UserDao {
+        return database.userDao()
     }
 }
