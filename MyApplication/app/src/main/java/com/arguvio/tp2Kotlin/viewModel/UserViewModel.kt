@@ -17,9 +17,19 @@ class UserViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel() {
 
+    /**
+     * Liste des utilisateurs chargés par la viewModel
+     */
     private val _users = MutableLiveData<List<User>>()
+
+    /**
+     * Liste des utilisateurs chargés par le viewModel
+     */
     val users: LiveData<List<User>> get() = _users
 
+    /**
+     * Charge tous les utilisateurs dans le viewModel
+     */
     fun loadUsers() {
         viewModelScope.launch {
             try {
@@ -32,6 +42,51 @@ class UserViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 Log.e("UserViewModel", "Erreur lors du chargement des utilisateurs", e)
+            }
+        }
+    }
+
+    /**
+     * Crée un nouvel utilisateur via le repository
+     */
+    fun createUser(newUser: User) {
+        viewModelScope.launch {
+            try {
+                userRepository.createUser(newUser)?.let {
+                    loadUsers() // Recharger les utilisateurs après la création
+                }
+            } catch (e: Exception) {
+                Log.e("UserViewModel", "Erreur lors de la création de l'utilisateur", e)
+            }
+        }
+    }
+
+    /**
+     * Met à jour un utilisateur dont l'identifiant est indiqué en paramètre, via le repository
+     */
+    fun updateUser(userId: Int, updatedUser: User) {
+        viewModelScope.launch {
+            try {
+                userRepository.updateUser(userId, updatedUser)?.let {
+                    loadUsers() // Recharger les utilisateurs après la mise à jour
+                }
+            } catch (e: Exception) {
+                Log.e("UserViewModel", "Erreur lors de la mise à jour de l'utilisateur", e)
+            }
+        }
+    }
+
+    /**
+     * Supprime un utilisateur en fonction de son identifiant en paramètre, via le repository
+     */
+    fun deleteUser(userId: Int) {
+        viewModelScope.launch {
+            try {
+                if (userRepository.deleteUser(userId)) {
+                    loadUsers() // Recharger les utilisateurs après la suppression
+                }
+            } catch (e: Exception) {
+                Log.e("UserViewModel", "Erreur lors de la suppression de l'utilisateur", e)
             }
         }
     }
