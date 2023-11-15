@@ -15,7 +15,7 @@ class UserRepository @Inject constructor(private val onlineSource: OnlineSource,
             val usersFromApi = onlineSource.getUsers()
             usersFromApi?.let {
                 val userEntities = it.map { user -> user.toEntity() }
-                userDao.insertAll(userEntities)
+                userDao.insert(*userEntities.toTypedArray())
                 return it
             }
         } else {
