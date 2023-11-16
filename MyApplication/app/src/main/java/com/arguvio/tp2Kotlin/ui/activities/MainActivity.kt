@@ -29,7 +29,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.arguvio.tp2Kotlin.util.rememberWindowSizeClass
 import com.example.myapplication.R
 import com.example.tp2Kotlin.ui.theme.MyApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,10 +37,6 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.flow.*
 import androidx.window.layout.FoldingFeature
-import com.arguvio.tp2Kotlin.util.DevicePosture
-import com.arguvio.tp2Kotlin.util.isBookPosture
-import com.arguvio.tp2Kotlin.util.isSeparating
-import com.arguvio.tp2Kotlin.util.isTableTopPosture
 
 
 @AndroidEntryPoint
