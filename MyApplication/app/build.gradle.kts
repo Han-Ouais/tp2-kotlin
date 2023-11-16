@@ -85,6 +85,10 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.13.0")
     implementation("com.squareup.retrofit2:converter-jackson:2.9.0")
+    implementation("androidx.window:window:1.0.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.0")
+
+
 }
 
 kapt {
