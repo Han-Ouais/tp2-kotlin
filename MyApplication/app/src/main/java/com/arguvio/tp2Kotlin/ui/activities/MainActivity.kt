@@ -1,6 +1,12 @@
 package com.arguvio.tp2Kotlin.ui.activities
 
+import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -48,6 +54,10 @@ class MainActivity : AppCompatActivity() {
 
     // Inject the UserViewModel
     private val userViewModel: UserViewModel by viewModels()
+
+    private lateinit var sensorManager: SensorManager
+    private var proximitySensor: Sensor? = null
+    private lateinit var sensorEventListener: SensorEventListener
 
     private val items = listOf(
         Screen.CreateRoom,
@@ -105,6 +115,54 @@ class MainActivity : AppCompatActivity() {
 
             }
         }
+
+
+        // Initialisation du SensorManager
+        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+
+        // Récupération du capteur de proximité
+        proximitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY)
+
+        // Configuration de l'EventListener
+        sensorEventListener = object : SensorEventListener {
+            override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
+                val accuracyDescription = when (accuracy) {
+                    SensorManager.SENSOR_STATUS_ACCURACY_HIGH -> "Précision haute"
+                    SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM -> "Précision moyenne"
+                    SensorManager.SENSOR_STATUS_ACCURACY_LOW -> "Précision faible"
+                    SensorManager.SENSOR_STATUS_UNRELIABLE -> "Précision non fiable"
+                    else -> "Précision inconnue"
+                }
+
+                Toast.makeText(this@MainActivity, "Précision changée: $accuracyDescription", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onSensorChanged(event: SensorEvent) {
+                if (event.sensor.type == Sensor.TYPE_PROXIMITY) {
+                    val value = event.values[0]
+
+                    if (value < proximitySensor?.maximumRange ?: 0f) {
+                        // Quelque chose est proche
+                        Toast.makeText(this@MainActivity, "Objet proche détecté", Toast.LENGTH_SHORT).show()
+                    } else {
+                        // Rien n'est proche
+                        Toast.makeText(this@MainActivity, "Rien à proximité", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        proximitySensor?.let { sensor ->
+            sensorManager.registerListener(sensorEventListener, sensor, SensorManager.SENSOR_DELAY_NORMAL)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sensorManager.unregisterListener(sensorEventListener)
     }
 }
 
