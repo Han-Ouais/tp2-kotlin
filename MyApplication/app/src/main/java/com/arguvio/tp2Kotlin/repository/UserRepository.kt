@@ -1,5 +1,6 @@
 package com.arguvio.tp2Kotlin.repository
 
+import android.util.Log
 import com.arguvio.tp2Kotlin.OnlineSource.OnlineSource
 import com.arguvio.tp2Kotlin.dao.UserDao
 import com.arguvio.tp2Kotlin.models.User
@@ -82,7 +83,7 @@ class UserRepository @Inject constructor(private val onlineSource: OnlineSource,
     }
 
     /**
-     * Convertie un UserEntity en User
+     * Convertit un UserEntity en User
      */
     private fun UserEntity.toUser(): User {
         return User(
@@ -90,5 +91,17 @@ class UserRepository @Inject constructor(private val onlineSource: OnlineSource,
             name = this.name,
             email = this.email,
         )
+    }
+
+    /**
+     * Rafraîchit la liste des utilisateurs en la récupérant depuis l'API REST et en mettant à jour
+     * la base de données locale Room.
+     */
+    suspend fun refreshUsers() {
+        val usersFromApi = onlineSource.getUsers()
+        usersFromApi?.let {
+            val userEntities = it.map { user -> user.toEntity() }
+            userDao.insert(*userEntities.toTypedArray())
+        }
     }
 }
