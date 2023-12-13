@@ -1,6 +1,7 @@
 package com.arguvio.tp2Kotlin.ui.activities
 
 import android.content.Context
+import android.content.Intent
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -12,10 +13,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
@@ -31,6 +34,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -47,6 +51,8 @@ import com.arguvio.tp2Kotlin.models.User
 import com.arguvio.tp2Kotlin.viewModel.UserViewModel
 import com.example.myapplication.R
 import com.example.tp2Kotlin.ui.theme.MyApplicationTheme
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -74,9 +80,10 @@ class MainActivity : AppCompatActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
-                ) {
+                )
+                {
                 }
-
+                Greeting()
 
                 val navController = rememberNavController()
                 Scaffold(
@@ -153,6 +160,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        if(!IsLoggedIn()){
+            startActivity(Intent(this, SignInActivity::class.java))
+            finish()
+            return
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         proximitySensor?.let { sensor ->
@@ -164,6 +181,31 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
         sensorManager.unregisterListener(sensorEventListener)
     }
+}
+
+fun IsLoggedIn() = Firebase.auth.currentUser != null
+@Composable
+fun Greeting(modifier: Modifier = Modifier) {
+    var loggedIn by remember { mutableStateOf(IsLoggedIn()) }
+
+    if(loggedIn){
+        val name = Firebase.auth.currentUser!!.displayName
+        Column(modifier = modifier.fillMaxSize()) {
+            Text(
+                text = "Hello $name!",
+                modifier = modifier
+            )
+
+            Button(onClick = {
+                Firebase.auth.signOut()
+                loggedIn = IsLoggedIn()
+            }) {
+                Text("Sign out")
+            }
+        }
+
+    }
+
 }
 
 @Composable
