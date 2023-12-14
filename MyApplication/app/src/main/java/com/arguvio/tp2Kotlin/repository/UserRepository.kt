@@ -5,6 +5,9 @@ import com.arguvio.tp2Kotlin.OnlineSource.OnlineSource
 import com.arguvio.tp2Kotlin.dao.UserDao
 import com.arguvio.tp2Kotlin.models.User
 import com.arguvio.tp2Kotlin.models.UserEntity
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class UserRepository @Inject constructor(private val onlineSource: OnlineSource, private val userDao: UserDao) {
@@ -35,35 +38,50 @@ class UserRepository @Inject constructor(private val onlineSource: OnlineSource,
      * Crée un nouvel utilisateur
      */
     suspend fun createUser(newUser: User): User? {
-        val createdUser = onlineSource.createUser(newUser)
-        createdUser?.let {
-            userDao.insert(it.toEntity())
+        return try {
+            val authResult = FirebaseAuth.getInstance().createUserWithEmailAndPassword(newUser.email!!, newUser.password!!).await()
+            newUser.copy(_id = authResult.user?.uid)
+        } catch (e: Exception) {
+            Log.e("UserRepository", "Error creating user", e)
+            null
         }
-        return createdUser
     }
 
     /**
      * Récupère un utilisateur via son identifiant, indiqué en paramètre
      */
-    suspend fun getUserById(userId: Int): User? {
-        return onlineSource.getUserById(userId)
+    suspend fun getUserById(userId: String): User? {
+        val db = FirebaseFirestore.getInstance()
+        return try {
+            val documentSnapshot = db.collection("users").document(userId).get().await()
+            documentSnapshot.toObject(User::class.java)
+        } catch (e: Exception) {
+            Log.e("UserRepository", "Error fetching user", e)
+            null
+        }
     }
 
     /**
      * Met à jour un utilisateur, dont l'identifiant est en paramètre
      */
-    suspend fun updateUser(userId: Int, updatedUser: User): User? {
-        val updatedUserFromApi = onlineSource.updateUser(userId, updatedUser)
-        updatedUserFromApi?.let {
-            userDao.insert(it.toEntity())
+    suspend fun updateUserProfile(user: User) {
+        val db = FirebaseFirestore.getInstance()
+        val userProfile = hashMapOf(
+            "name" to user.name,
+            "email" to user.email
+            // autres champs...
+        )
+        user._id?.let { userId ->
+            db.collection("users").document(userId).set(userProfile)
+                .addOnSuccessListener { Log.d("UserRepository", "User profile updated") }
+                .addOnFailureListener { e -> Log.w("UserRepository", "Error updating profile", e) }
         }
-        return updatedUserFromApi
     }
 
     /**
      * Supprime un utilisateur dont l'identifiant est en paramètre
      */
-    suspend fun deleteUser(userId: Int): Boolean {
+    suspend fun deleteUser(userId: String): Boolean {
         val isDeleted = onlineSource.deleteUser(userId)
         if (isDeleted) {
             userDao.delete(UserEntity(_id = userId))

@@ -106,7 +106,7 @@ class OnlineSource @Inject constructor(private val apiService: ApiService){
     /**
      * Supprime un utilisateur en fonction de son identifiant
      */
-    suspend fun deleteUser(userId: Int): Boolean {
+    suspend fun deleteUser(userId: String): Boolean {
         try {
             val call: Call<Void> = apiService.deleteUser(userId)
             val response: Response<Void> = call.execute()
